@@ -11,6 +11,8 @@ on:
       - '.github/*'
       - '.github/*_TEMPLATE/**'
       - '*.md'
+  workflow_dispatch:
+    # allows manual trigger
 
 jobs:
   build:
