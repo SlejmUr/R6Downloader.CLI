@@ -33,7 +33,17 @@ jobs:
     - name: Upload artifact (Win)
       uses: actions/upload-artifact@v4
       with:
-        name: R6Downloader.CLI
+        name: R6Downloader.CLI.win-x64
+        path: Out
+        if-no-files-found: error
+
+    - name: Publish FrameWork
+      run: dotnet publish -r win-x64 -p:PublishSingleFile=true --self-contained false -o:Out
+
+    - name: Upload artifact (Win)
+      uses: actions/upload-artifact@v4
+      with:
+        name: R6Downloader.CLI.framework
         path: Out
         if-no-files-found: error
 
@@ -46,7 +56,7 @@ jobs:
       - name: Variables
         id: vars
         run: echo sha_short=${GITHUB_SHA::7} >> $GITHUB_OUTPUT
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           path: artifacts
       - run: for a in *; do zip -r "$a.zip" "$a"; done
