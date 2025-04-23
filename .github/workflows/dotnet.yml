@@ -1,0 +1,61 @@
+name: .NET Build
+
+on:
+  push:
+      paths-ignore:
+      - '.github/*'
+      - '.github/*_TEMPLATE/**'
+      - '*.md'
+  pull_request:
+      paths-ignore:
+      - '.github/*'
+      - '.github/*_TEMPLATE/**'
+      - '*.md'
+
+jobs:
+  build:
+    name: .NET Build
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+    steps:
+    - uses: actions/checkout@v3
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 9.0.x
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Publish Self Contained
+      run: dotnet publish -r win-x64 -p:PublishSingleFile=true --self-contained true -o:Out
+
+    - name: Upload artifact (Win)
+      uses: actions/upload-artifact@v3
+      with:
+        name: R6Downloader.CLI
+        path: Out
+        if-no-files-found: error
+
+
+  release:
+    if: github.ref == 'refs/heads/master' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    needs: [build]
+    steps:
+      - name: Variables
+        id: vars
+        run: echo sha_short=${GITHUB_SHA::7} >> $GITHUB_OUTPUT
+      - uses: actions/download-artifact@v3
+        with:
+          path: artifacts
+      - run: for a in *; do zip -r "$a.zip" "$a"; done
+        working-directory: artifacts
+      - uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: "latest"
+          prerelease: true
+          title: "Development Build"
+          files: |
+            artifacts/*.zip
