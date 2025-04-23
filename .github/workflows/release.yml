@@ -1,0 +1,17 @@
+name: "Prepare release"
+
+on:
+  push:
+    tags:
+      - "release-*"
+  workflow_dispatch:
+    # allows manual trigger
+
+permissions:
+  contents: "write"
+
+jobs:
+  release-all:
+    name: "Build"
+    if: ${{ !cancelled() }}
+    uses: "./.github/workflows/dotnet.yml"
