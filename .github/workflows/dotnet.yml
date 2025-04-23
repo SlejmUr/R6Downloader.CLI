@@ -13,6 +13,8 @@ on:
       - '*.md'
   workflow_dispatch:
     # allows manual trigger
+  workflow_call:
+    # allow release push
 
 jobs:
   build:
