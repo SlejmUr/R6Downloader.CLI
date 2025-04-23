@@ -31,7 +31,7 @@ jobs:
       run: dotnet publish -r win-x64 -p:PublishSingleFile=true --self-contained true -o:Out
 
     - name: Upload artifact (Win)
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: R6Downloader.CLI
         path: Out
